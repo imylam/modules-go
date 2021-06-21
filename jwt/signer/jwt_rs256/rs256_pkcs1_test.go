@@ -1,0 +1,68 @@
+package jwt_rs256
+
+import (
+	"testing"
+
+	"github.com/imylam/modules-go/crypto_utils/rsa/sign_scheme"
+	"github.com/imylam/modules-go/jwt/signer"
+)
+
+var (
+	pkcs1Signature      = "Cok34VfDiwUpMYDKXaWj73E0Chvp2n8FNzVxR6G7vvgqb_JYeZSGaL6GQUeaDycCg6PbB62WVqSMv-tvrSxx3K36Dy__dVgVDWWxDLWsJT5waPohHYEwvay_w6fHRtPOl6RaI_Xm1xFJkZNGLCOj-6nIvayteaLy_1j_tq2A9qdKILASl4uSyUUYeJb1x96JX7sqLwtubRmbyEJi0Bv9Z5se4vTVMydVPQob8_VnJKngGudaEC3Esn35UaM7_F6xDk-EoNrfrbXzSErDHcXgWYvnFlDsUGR7gjabW3wW3j_Mo_GqmNJxtppbdXbnoIPzcHP20i-D4CZ5xs2V-LEK5w"
+	pkcs1PrivateKeyPem1 = `-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEAuyHj1rDrMOGn72c/V8XmizDpNGG4GittZkWATCbAkCDkUZo6
+JHfhOJMzqTrOglTpgzaEdBuuLOEWh1X5sZ1VY9S78+OuKIctjZ1wxQ3mU3F+5nrJ
+4H5Kgobh6cfFHpfojU6GNLLf6df54jiNeX3bxhRz6EDphnLF7mV2o3y+PuCq9qI8
+auM/9Jh5OYDdpLMsTrkO6XZKxhbDCpiZUsakUrPAqqdbZlOt2VcywqXxAHs3co0w
+oyIdytVX5DyDwuMxN0Kq8EUYZpwxbYVBywhKFk8T1zUwh1n6srG8GQon0yr5wdtc
+hgr9baIrCyVrAz2hLUc0p4LNyqbKI4rO8678dwIDAQABAoIBAAEpgbe4m41PKXLU
+KlGKOhdNM3WO0czfzisfbV+LshBzE9fp5EiLsgte5qg7ZELs8hJNiV8LOPawYypt
+/0H6HyiijpRCKre3tzG085lVr8N+5fHae1x4jE/pNIf2JKQ+/0O5ZB35qmhSXgvo
+nABQJshBIkMj/A9IsS/801LKmIfdbJkeTnSrRwK/D3P1ckWyelB00ujKYZiKBVX4
+DOp8ED0zysgsEZv4Pf8AAAH/RNezw+TX26WkMqMANJIbquxqTGlXvG2GvQe5Qejm
+UWBcAUKZe+ErIw/dZlieJTQUzO9T6wCZbY8ADj8lm4G9HiGcAgCXRzzknaogXwBP
+6VEBxakCgYEA6LphwoSgBdVsOptXLjIIWCAGZNy4sMv2k1c9jKzLxsuyuzE4P2k1
+OpRSDQwS8mm4RsVOr59f8tbPlj8VDfm+Yl+pxzb7leVoxPgSnsPvzbHML2fsamlD
+9SzR5gi69NKRwGTr4L/OhRxfl1NM7MSgNkrm+ie0WZVT7RD7DdJc7y0CgYEAzdhN
+UurVWtCBCIMt8WbfqDHBh7KcpptjkTNtXNKmwQ43wO/HTkixBu44uEUudNuRgPZd
+BCj3dQynDExQ9Ck9cpsfAmEfpXAJgwDw5ARW/tfHJrKTeqMkWw4Ofn3AaGLQXiXx
+RWljT+86njF6Odslhi7vvxvjfS0f1blMr5HawLMCgYAebP+K5rvlB1n274geSfw9
+STKMzS54LrI14Rny4kRh4Q+k2XJ5F9AVsH5ppkJz3s5wsirvWu64WM0a33RpN1Vk
+lw0jNlT969geqDAHAabARZZkPDn0T37K9ukaIdoPV9gmRwtvfqQJUwRMTF+qNKqd
+bn10BuzVKWinfajUzcPIoQKBgBanwNLob7UAD8ONFIhmJyWO3FsACIe5wHqhq160
+/I9w7if4+/mcvIcjvvBhBNztsZT9CH3FuH6Uduo+mAZXZ6Due7o6UE5YB2P4vYqL
+A7wmqY+TxfGQdRbkdCnt0zhp77789BIMqFaK4Ou6TFaDzRx4nABvpFkJl2BhdZQ5
+PFdLAoGBAKrciHl6pzA4wvPVZyKsSVGXq7Pvycs4rOBguayX6AfxLMq4AlQHvGu2
+09eWhdfNbrmHActk2JKlqL2nYeJqXM5rc7GeUnSgcSv8zsUHbGszNvwWnH7ev1bU
+v+chMXwCx+cgciFrvKlQWiU39qPAEtggSKZ7VzJ/WrGN4IcAaTHA
+-----END RSA PRIVATE KEY-----`
+	pkcs1PublicKeyPem1 = `-----BEGIN RSA PUBLIC KEY-----
+MIIBCgKCAQEAuyHj1rDrMOGn72c/V8XmizDpNGG4GittZkWATCbAkCDkUZo6JHfh
+OJMzqTrOglTpgzaEdBuuLOEWh1X5sZ1VY9S78+OuKIctjZ1wxQ3mU3F+5nrJ4H5K
+gobh6cfFHpfojU6GNLLf6df54jiNeX3bxhRz6EDphnLF7mV2o3y+PuCq9qI8auM/
+9Jh5OYDdpLMsTrkO6XZKxhbDCpiZUsakUrPAqqdbZlOt2VcywqXxAHs3co0woyId
+ytVX5DyDwuMxN0Kq8EUYZpwxbYVBywhKFk8T1zUwh1n6srG8GQon0yr5wdtchgr9
+baIrCyVrAz2hLUc0p4LNyqbKI4rO8678dwIDAQAB
+-----END RSA PUBLIC KEY-----`
+
+	jwtRS256Pkcs1Signer = NewJwtRS256Pkcs1()
+)
+
+func TestAlgoRS256Pkcs1(t *testing.T) {
+	signer.SharedTestAlgo(t, jwtRS256Pkcs1Signer, ALGO)
+}
+func TestSignSchemeRS256Pkcs1(t *testing.T) {
+	signer.SharedTestSignScheme(t, jwtRS256Pkcs1Signer, sign_scheme.PKCSv1_5)
+}
+
+func TestSignAgainstReferenceRS256Pkcs1(t *testing.T) {
+	signer.SharedTestSignAgainstReference(t, jwtRS256Pkcs1Signer, pkcs1PrivateKeyPem1, pkcs1Signature)
+}
+
+func TestVerifyAgainstReferenceRS256Pkcs1(t *testing.T) {
+	signer.SharedTestVerifyAgainstReference(t, jwtRS256Pkcs1Signer, pkcs1PublicKeyPem1, pkcs1Signature)
+}
+
+func TestSignThenVerifyWithRandomInputsRS256Pkcs1(t *testing.T) {
+	signer.SharedTestRsaSignThenVerifyWithRandomInputsTest(t, jwtRS256Pkcs1Signer, pkcs1PrivateKeyPem1, pkcs1PublicKeyPem1, "crypto/rsa: verification error")
+}

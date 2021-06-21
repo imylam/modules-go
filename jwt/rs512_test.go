@@ -1,0 +1,32 @@
+package jwt
+
+import (
+	"testing"
+
+	"github.com/imylam/modules-go/jwt/signer/jwt_rs512"
+)
+
+var (
+	refRS512JwtString1 string = "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJjIyI6Ik1pY3Jvc29mdCIsImdvbGFuZyI6Ikdvb2dsZSJ9.Xzlu9LcpRAVf7Rxuf4G05S6lxObvwRkBfp618QVwy48ncmbB3Y6SJEXp8X00mC4ZXLqL7MnxHFLqnQYyBSCcb2RxE4WlizIjgThDO1hdjpywqLoyGvcDpEm5Gjg0hj9JckJuX4yswYA5DpBxMk1o_OThCspXIjfXb5bRigiq7Y8DjWyS71ejIzLCErpntzOoVwKJBUt3WAwiugXwI-8zcpUmKE7zSH4kkQmze-oALgP2XeVXSrWeAlKuRpsQZm7YgUGksrCCCmxhvZxgMwAaY2V4SCn62ehsHfnYfxt1CAwZxn8NIu_pI6RYoVq8KNLIR1grN_u0IVz3IAIJ-BCPzA"
+	refRS512JwtString2 string = "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJjIyI6Ik1pY3Jvc29mdCIsImdvbGFuZyI6Ikdvb2dsZSJ9.T7ByTdWP_15VACtoDYkfkjdmkhJbH55_4AaRRfAQRB4YV2-pT14tnO9XcZPPBwXs3H1vYXirHY1Cjm4uY0pWIPAQT26xJQZW9O7c-rF2WdOZST_TBJWaMjCPqNa6wSeEPTeiRsod33_VP5WPIx1hwXBrLLw_UIOpCwEmYweP-CJJIaG10LJHzwm-ckFENxgfFGI5Nu6kcptI3TuVEBlLsmyV9in9bPNC_IaxHtGV3FLRXlaLGHLZO2qloNWDzqmGv5A1ndEK3ggZ00leZe7kaCb0aI3YZhWuX3wkXYoB-qiAmYbxHex-numjuApGX3NERmsnUB4PILrwPDHH4zykpQ"
+)
+
+func TestRS512TokenAgainstReferencePkcs1Pkix(t *testing.T) {
+	SharedTestTokenAgainstStandard(t, jwt_rs512.NewJwtRS512Pkcs1Pkix(), refPkcs1PrivateKeyPem2, refRS512JwtString2)
+}
+
+func TestRS512VerifyWithReferencePkcs1(t *testing.T) {
+	SharedTestVerifyWithReference(t, jwt_rs512.NewJwtRS512Pkcs1(), refPkcs1PublicKeyPem1, refRS512JwtString1)
+}
+
+func TestRS512VerifyWithReferencePkcs1Pkix(t *testing.T) {
+	SharedTestVerifyWithReference(t, jwt_rs512.NewJwtRS512Pkcs1Pkix(), refPkixPublicKeyPem2, refRS512JwtString2)
+}
+
+func TestRS512TokenThenVerifyPkcs1(t *testing.T) {
+	SharedTestTokenThenVerify(t, jwt_rs512.NewJwtRS512Pkcs1(), refPkcs1PrivateKeyPem1, refPkcs1PublicKeyPem1)
+}
+
+func TestRS512TokenThenVerifyPkcs1Pkix(t *testing.T) {
+	SharedTestTokenThenVerify(t, jwt_rs512.NewJwtRS512Pkcs1Pkix(), refPkcs1PrivateKeyPem2, refPkixPublicKeyPem2)
+}
