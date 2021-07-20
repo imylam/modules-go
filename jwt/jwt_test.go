@@ -9,7 +9,11 @@ import (
 
 	"github.com/imylam/modules-go/crypto_utils/signer"
 	"github.com/imylam/modules-go/jwt/signer/jwt_hs256"
+	"github.com/imylam/modules-go/jwt/signer/jwt_hs512"
 	"github.com/imylam/modules-go/jwt/signer/jwt_ps256"
+	"github.com/imylam/modules-go/jwt/signer/jwt_ps512"
+	"github.com/imylam/modules-go/jwt/signer/jwt_rs256"
+	"github.com/imylam/modules-go/jwt/signer/jwt_rs512"
 	"github.com/imylam/modules-go/stringutils"
 )
 
@@ -88,49 +92,245 @@ e+lf4s4OxQawWD79J9/5d3Ry0vbV3Am1FtGJiJvOwRsIfVChDpYStTcHTCMqtvWb
 V6L11BWkpzGXSW4Hv43qa+GSYOD2QU68Mb59oSk2OB+BtOLpJofmbGEGgvmwyCI9
 MwIDAQAB
 -----END PUBLIC KEY-----`
+
+	jwtHS256Signer          = &jwt_hs256.JwtHS256{}
+	jwtHS512Signer          = &jwt_hs512.JwtHS512{}
+	jwtRS256Pkcs1PkixSigner = jwt_rs256.NewJwtRS256Pkcs1Pkix()
+	jwtRS256Pkcs1Signer     = jwt_rs256.NewJwtRS256Pkcs1()
+	jwtRS512Pkcs1PkixSigner = jwt_rs512.NewJwtRS512Pkcs1Pkix()
+	jwtRS512Pkcs1Signer     = jwt_rs512.NewJwtRS512Pkcs1()
+	jwtPS256Pkcs1PkixSigner = jwt_ps256.NewJwtPS256Pkcs1Pkix()
+	jwtPS256Pkcs1Signer     = jwt_ps256.NewJwtPS256Pkcs1()
+	jwtPS512Pkcs1PkixSigner = jwt_ps512.NewJwtPS512Pkcs1Pkix()
+	jwtPS512Pkcs1Signer     = jwt_ps512.NewJwtPS512Pkcs1()
+
+	refHS256Jwt                 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjIyI6Ik1pY3Jvc29mdCIsImdvbGFuZyI6Ikdvb2dsZSJ9.2WGdcAREbJ9Ih-I3bCXLYmmeVfrnTbdKIAUmqIxLRfo"
+	refHS512Jwt                 = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJjIyI6Ik1pY3Jvc29mdCIsImdvbGFuZyI6Ikdvb2dsZSJ9.6rmsBM2QIjq-qnaMbn1Khi-zpm_S1hZiSJMITzmM28ZDX0AywmqCRlGGzVfRmlddKezWVmYwDqb-edX5SsJYdQ"
+	refRS256JwtPkcs1     string = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJjIyI6Ik1pY3Jvc29mdCIsImdvbGFuZyI6Ikdvb2dsZSJ9.muDiMNErqOZeLavxjDOs6Z7fBhScEcfHt4Obav9Lar003C7NOgWkgnjK7lfPtVlhqJ3il2U11tEijk-Rs93UpZ0WHRT4rC4MgVjCIBDIxUttwPxLb7ax6JTQPTuExqzk8ymSVJUwRYayQ7snnrUNyH9845FzFNBPgLvzS-IfAPSCX5eSeScOue3-0TEBRfbmtnKKbkeALjxBypPlhxkVlsLtkpt4vu09x9WrBcXMnxaNzZn3OJxfLhzfYgoXo5P6xl1fdHbDD-ZfcbqWKYMmYGXGnPgh6v3KroovOvhd345HjhZ-01BD_xAdbwQtrntti714oImdlTDmqXIUWzXYJw"
+	refRS256JwtPkcs1Pkix string = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJjIyI6Ik1pY3Jvc29mdCIsImdvbGFuZyI6Ikdvb2dsZSJ9.AH2s9DZt9oRrREB2yPC_Dn167uCa2KBBYAoDtni6KBornZBT1O63FcZje7V3eWEAATPuEgWwIdqaL5yhAenwk3v86vDodyTKbezQgMEa48bNIZRdLSwXiFX9B8v2MnYgJrK_KBGaDKZWstrj_PmlnRbzxOTagZ4nVeDm4BBaPWXtd0V496Z_oq3Joewb9XCUSErNYvZl_ZoiRGGZY1THuQPKuEnp4mbLKy9qsrMh8JgFLYiVtiO-FFLxsHXOD9D0Udv5YNeWDXiF9rtoHh83tQ8RRI9vb0YfbrZnUf7-G_OAuU6V8kIabhIFeVgL2TCaPXhNhjUOpZMEuNFsqdrqfA"
+	refRS512JwtPkcs1     string = "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJjIyI6Ik1pY3Jvc29mdCIsImdvbGFuZyI6Ikdvb2dsZSJ9.Xzlu9LcpRAVf7Rxuf4G05S6lxObvwRkBfp618QVwy48ncmbB3Y6SJEXp8X00mC4ZXLqL7MnxHFLqnQYyBSCcb2RxE4WlizIjgThDO1hdjpywqLoyGvcDpEm5Gjg0hj9JckJuX4yswYA5DpBxMk1o_OThCspXIjfXb5bRigiq7Y8DjWyS71ejIzLCErpntzOoVwKJBUt3WAwiugXwI-8zcpUmKE7zSH4kkQmze-oALgP2XeVXSrWeAlKuRpsQZm7YgUGksrCCCmxhvZxgMwAaY2V4SCn62ehsHfnYfxt1CAwZxn8NIu_pI6RYoVq8KNLIR1grN_u0IVz3IAIJ-BCPzA"
+	refRS512JwtPkcs1Pkix string = "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJjIyI6Ik1pY3Jvc29mdCIsImdvbGFuZyI6Ikdvb2dsZSJ9.T7ByTdWP_15VACtoDYkfkjdmkhJbH55_4AaRRfAQRB4YV2-pT14tnO9XcZPPBwXs3H1vYXirHY1Cjm4uY0pWIPAQT26xJQZW9O7c-rF2WdOZST_TBJWaMjCPqNa6wSeEPTeiRsod33_VP5WPIx1hwXBrLLw_UIOpCwEmYweP-CJJIaG10LJHzwm-ckFENxgfFGI5Nu6kcptI3TuVEBlLsmyV9in9bPNC_IaxHtGV3FLRXlaLGHLZO2qloNWDzqmGv5A1ndEK3ggZ00leZe7kaCb0aI3YZhWuX3wkXYoB-qiAmYbxHex-numjuApGX3NERmsnUB4PILrwPDHH4zykpQ"
+	refPS256JwtPkcs1Pkix string = "eyJhbGciOiJQUzI1NiIsInR5cCI6IkpXVCJ9.eyJjIyI6Ik1pY3Jvc29mdCIsImdvbGFuZyI6Ikdvb2dsZSJ9.EgTzFPEk-Xwf-DDF5oWNKU5JL_u3TrAJ0Bqmd5VYLkfzgrpX38mB69bojtM1_9nlKqvhkVqVtWdK5esiX9tsERNstlouQwuHhFogJ7S_GNuOCTCsdWzM531Ujv92lZuk93GqLVctNn2IpRc3txfn-LQ7ojUpsbiANxmKzzxDxmYpuIQKmAgVvtfXVZm1znFM-8hB9m98Cpnz_zwPyE-cRrL-TQ7nXNyK6N7NZwAJ43MdQ2J8lqFeBFO-5qjQ_4UPPLSJ29f2xk7kYeULsQ6KS8DPmaA-6GDPK4kkZUxHvLJVlcCSRBFZBMYS_IwkrsM0dbnQjCdXQo58hF7y5inj-w"
 )
 
-func SharedTestTokenAgainstStandard(t *testing.T, jwtSigner signer.Signer, key, expectedJwtToken string) {
+func TestTokenAgainstReference(t *testing.T) {
 
-	t.Run("success", func(t *testing.T) {
-		jwtToken, err := Token(jwtSigner, key, testPayloadClaims)
+	type args struct {
+		key string //PrivateKey
+	}
 
-		if err != nil {
-			t.Errorf("[%s]Expect err to be nil, got: %s", jwtSigner.Algo(), err.Error())
-		}
-		if jwtToken != expectedJwtToken {
-			t.Errorf("[%s]Expect jwtToken: %s, got: %s", jwtSigner.Algo(), expectedJwtToken, jwtToken)
-		}
-	})
+	testCases := []struct {
+		name   string
+		signer signer.Signer
+		args   args
+		want   string
+	}{
+		{
+			name:   "GIVEN_algo_HS256_WHEN_TokenWithTestPayloadClaims_THEN_jwt_same_as_ref",
+			signer: jwtHS256Signer,
+			args:   args{key: secretKey},
+			want:   refHS256Jwt,
+		},
+		{
+			name:   "GIVEN_algo_HS256_WHEN_TokenWithTestPayloadClaims_THEN_jwt_same_as_ref",
+			signer: jwtHS512Signer,
+			args:   args{key: secretKey},
+			want:   refHS512Jwt,
+		},
+		{
+			name:   "GIVEN_algo_RS256_WHEN_TokenWithTestPayloadClaims_and_Pkcs1KeysPair_THEN_jwt_same_as_ref",
+			signer: jwtRS256Pkcs1Signer,
+			args:   args{key: refPkcs1PrivateKeyPem1},
+			want:   refRS256JwtPkcs1,
+		},
+		{
+			name:   "GIVEN_algo_RS256_WHEN_TokenWithTestPayloadClaims_and_Pkcs1PkixKeysPair_THEN_jwt_same_as_ref",
+			signer: jwtRS256Pkcs1PkixSigner,
+			args:   args{key: refPkcs1PrivateKeyPem2},
+			want:   refRS256JwtPkcs1Pkix,
+		},
+		{
+			name:   "GIVEN_algo_RS512_WHEN_TokenWithTestPayloadClaims_and_Pkcs1KeysPair_THEN_jwt_same_as_ref",
+			signer: jwtRS512Pkcs1Signer,
+			args:   args{key: refPkcs1PrivateKeyPem1},
+			want:   refRS512JwtPkcs1,
+		},
+		{
+			name:   "GIVEN_algo_RS512_WHEN_TokenWithTestPayloadClaims_and_Pkcs1PkixKeysPair_THEN_jwt_same_as_ref",
+			signer: jwtRS512Pkcs1PkixSigner,
+			args:   args{key: refPkcs1PrivateKeyPem2},
+			want:   refRS512JwtPkcs1Pkix,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			jwtToken, err := Token(tc.signer, tc.args.key, testPayloadClaims)
+
+			if err != nil {
+				t.Errorf("Expect err to be nil, got: %s", err.Error())
+			}
+			if jwtToken != tc.want {
+				t.Errorf("Expect jwtToken: %s, got: %s", tc.want, jwtToken)
+			}
+		})
+	}
 }
 
-func SharedTestVerifyWithReference(t *testing.T, jwtSigner signer.Signer, publicKey string, refJwtToken string) {
-	t.Run("success", func(t *testing.T) {
-		payloadClaims, err := Verify(jwtSigner, publicKey, refJwtToken)
+func TestVerifyWithReference(t *testing.T) {
 
-		if err != nil {
-			t.Errorf("[%s]Failed to verify reference, got error: %s", jwtSigner.Algo(), err.Error())
-		}
-		if !reflect.DeepEqual(testPayloadClaims, payloadClaims) {
-			t.Errorf("[%s]Failed to get back original payload", jwtSigner.Algo())
-		}
-	})
+	type args struct {
+		key    string //PublicKey
+		refJwt string
+	}
+
+	testCases := []struct {
+		name   string
+		signer signer.Signer
+		args   args
+	}{
+		{
+			name:   "GIVEN_algo_HS256_WHEN_VerifyWithRefJwt_THEN_success",
+			signer: jwtHS256Signer,
+			args:   args{key: secretKey, refJwt: refHS256Jwt},
+		},
+		{
+			name:   "GIVEN_algo_HS512_WHEN_VerifyWithRefJwt_THEN_success",
+			signer: jwtHS512Signer,
+			args:   args{key: secretKey, refJwt: refHS512Jwt},
+		},
+		{
+			name:   "GIVEN_algo_RS256_WHEN_VerifyWithRefJwt_and_Pkcs1KeysPair_THEN_success",
+			signer: jwtRS256Pkcs1Signer,
+			args:   args{key: refPkcs1PublicKeyPem1, refJwt: refRS256JwtPkcs1},
+		},
+		{
+			name:   "GIVEN_algo_RS256_WHEN_VerifyWithRefJwt_and_Pkcs1PkixKeysPair_THEN_success",
+			signer: jwtRS256Pkcs1PkixSigner,
+			args:   args{key: refPkixPublicKeyPem2, refJwt: refRS256JwtPkcs1Pkix},
+		},
+		{
+			name:   "GIVEN_algo_RS512_WHEN_VerifyWithRefJwt_and_Pkcs1KeysPair_THEN_success",
+			signer: jwtRS512Pkcs1Signer,
+			args:   args{key: refPkcs1PublicKeyPem1, refJwt: refRS512JwtPkcs1},
+		},
+		{
+			name:   "GIVEN_algo_RS512_WHEN_VerifyWithRefJwt_and_Pkcs1PkixKeysPair_THEN_success",
+			signer: jwtRS512Pkcs1PkixSigner,
+			args:   args{key: refPkixPublicKeyPem2, refJwt: refRS512JwtPkcs1Pkix},
+		},
+		// {
+		// 	name:   "GIVEN_algo_PS256_WHEN_VerifyWithRefJwt_and_Pkcs1KeysPair_THEN_success",
+		// 	signer: jwtPS256Pkcs1Signer,
+		// 	args:   args{key: refPkcs1PublicKeyPem1, refJwt: refPS256JwtPkcs1Pkix},
+		// },
+		{
+			name:   "GIVEN_algo_PS256_WHEN_VerifyWithRefJwt_and_Pkcs1PkixKeysPair_THEN_success",
+			signer: jwtPS256Pkcs1PkixSigner,
+			args:   args{key: refPkixPublicKeyPem2, refJwt: refPS256JwtPkcs1Pkix},
+		},
+		// {
+		// 	name:   "GIVEN_algo_PS512_WHEN_VerifyWithRefJwt_and_Pkcs1KeysPair_THEN_success",
+		// 	signer: jwtPS512Pkcs1Signer,
+		// 	args:   args{key: refPkcs1PublicKeyPem1, refJwt: refPS512JwtPkcs1},
+		// },
+		// {
+		// 	name:   "GIVEN_algo_PS512_WHEN_VerifyWithRefJwt_and_Pkcs1PkixKeysPair_THEN_success",
+		// 	signer: jwtPS512Pkcs1PkixSigner,
+		// 	args:   args{key: refPkixPublicKeyPem2, refJwt: refPS512JwtPkcs1Pkix},
+		// },
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			payloadClaims, err := Verify(tc.signer, tc.args.key, tc.args.refJwt)
+
+			if err != nil {
+				t.Errorf("Failed to verify reference, got error: %s", err.Error())
+			}
+			if !reflect.DeepEqual(testPayloadClaims, payloadClaims) {
+				t.Errorf("Failed to get back original payload")
+			}
+		})
+	}
 }
 
-func SharedTestTokenThenVerify(t *testing.T, jwtSigner signer.Signer, privateKey, publicKey string) {
+func TestTokenThenVerify(t *testing.T) {
 
-	t.Run("success", func(t *testing.T) {
-		jwtToken, _ := Token(jwtSigner, privateKey, testPayloadClaims)
+	type args struct {
+		privateKey string
+		publicKey  string
+	}
 
-		payloadClaims, err := Verify(jwtSigner, publicKey, jwtToken)
+	testCases := []struct {
+		name   string
+		signer signer.Signer
+		args   args
+	}{
+		{
+			name:   "GIVEN_algo_HS256_WHEN_TokenThenVerify_THEN_success",
+			signer: jwtHS256Signer,
+			args:   args{privateKey: secretKey, publicKey: secretKey},
+		},
+		{
+			name:   "GIVEN_algo_HS512_WHEN_TokenThenVerify_THEN_success",
+			signer: jwtHS512Signer,
+			args:   args{privateKey: secretKey, publicKey: secretKey},
+		},
+		{
+			name:   "GIVEN_algo_RS256_WHEN_TokenThenVerify_with_Pkcs1KeysPair_THEN_success",
+			signer: jwtRS256Pkcs1Signer,
+			args:   args{privateKey: refPkcs1PrivateKeyPem1, publicKey: refPkcs1PublicKeyPem1},
+		},
+		{
+			name:   "GIVEN_algo_RS256_WHEN_TokenThenVerify_with_Pkcs1PkixKeysPair_THEN_success",
+			signer: jwtRS256Pkcs1PkixSigner,
+			args:   args{privateKey: refPkcs1PrivateKeyPem2, publicKey: refPkixPublicKeyPem2},
+		},
+		{
+			name:   "GIVEN_algo_RS512_WHEN_TokenThenVerify_with_Pkcs1KeysPair_THEN_success",
+			signer: jwtRS512Pkcs1Signer,
+			args:   args{privateKey: refPkcs1PrivateKeyPem1, publicKey: refPkcs1PublicKeyPem1},
+		},
+		{
+			name:   "GIVEN_algo_RS512_WHEN_TokenThenVerify_with_Pkcs1PkixKeysPair_THEN_success",
+			signer: jwtRS512Pkcs1PkixSigner,
+			args:   args{privateKey: refPkcs1PrivateKeyPem2, publicKey: refPkixPublicKeyPem2},
+		},
+		{
+			name:   "GIVEN_algo_PS256_WHEN_TokenThenVerify_with_Pkcs1KeysPair_THEN_success",
+			signer: jwtPS256Pkcs1Signer,
+			args:   args{privateKey: refPkcs1PrivateKeyPem1, publicKey: refPkcs1PublicKeyPem1},
+		},
+		{
+			name:   "GIVEN_algo_PS256_WHEN_TokenThenVerify_with_Pkcs1PkixKeysPair_THEN_success",
+			signer: jwtPS256Pkcs1PkixSigner,
+			args:   args{privateKey: refPkcs1PrivateKeyPem2, publicKey: refPkixPublicKeyPem2},
+		},
+		{
+			name:   "GIVEN_algo_PS512_WHEN_TokenThenVerify_with_Pkcs1KeysPair_THEN_success",
+			signer: jwtPS512Pkcs1Signer,
+			args:   args{privateKey: refPkcs1PrivateKeyPem1, publicKey: refPkcs1PublicKeyPem1},
+		},
+		{
+			name:   "GIVEN_algo_PS512_WHEN_TokenThenVerify_with_Pkcs1PkixKeysPair_THEN_success",
+			signer: jwtPS512Pkcs1PkixSigner,
+			args:   args{privateKey: refPkcs1PrivateKeyPem2, publicKey: refPkixPublicKeyPem2},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			jwtToken, _ := Token(tc.signer, tc.args.privateKey, testPayloadClaims)
 
-		if err != nil {
-			t.Errorf("[%s]Failed to verify own signed jwtToken, got error: %s", jwtSigner.Algo(), err.Error())
-		}
-		if !reflect.DeepEqual(testPayloadClaims, payloadClaims) {
-			t.Errorf("[%s]Failed to get back original payload", jwtSigner.Algo())
-		}
-	})
+			payloadClaims, err := Verify(tc.signer, tc.args.publicKey, jwtToken)
+
+			if err != nil {
+				t.Errorf("Failed to verify own signed jwtToken, got error: %s", err.Error())
+			}
+			if !reflect.DeepEqual(testPayloadClaims, payloadClaims) {
+				t.Errorf("Failed to get back original payload")
+			}
+		})
+	}
 }
 
 func TestTokenErrorHandling(t *testing.T) {
